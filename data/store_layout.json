@@ -1,0 +1,78 @@
+{
+  "STORE_BLR_002": {
+    "store_id": "STORE_BLR_002",
+    "name": "Apex Retail Bengaluru",
+    "city": "Bengaluru",
+    "open_hours": {"open": "10:00", "close": "21:00"},
+    "cameras": [
+      {
+        "camera_id": "CAM_ENTRY_01",
+        "type": "entry_exit",
+        "description": "Entry/Exit threshold camera",
+        "entry_line": [[0, 50], [1920, 50]],
+        "coverage_zones": []
+      },
+      {
+        "camera_id": "CAM_FLOOR_01",
+        "type": "main_floor",
+        "description": "Main floor zone coverage camera",
+        "coverage_zones": ["SKINCARE", "HAIRCARE", "FRAGRANCE", "LIPSTICK", "FOUNDATION"]
+      },
+      {
+        "camera_id": "CAM_BILLING_01",
+        "type": "billing",
+        "description": "Billing counter area camera",
+        "coverage_zones": ["BILLING"]
+      }
+    ],
+    "zones": [
+      {
+        "zone_id": "SKINCARE",
+        "sku_zone": "MOISTURISER",
+        "polygon": [[100, 150], [500, 150], [500, 500], [100, 500]]
+      },
+      {
+        "zone_id": "HAIRCARE",
+        "sku_zone": "SHAMPOO",
+        "polygon": [[520, 150], [900, 150], [900, 500], [520, 500]]
+      },
+      {
+        "zone_id": "FRAGRANCE",
+        "sku_zone": "PERFUME",
+        "polygon": [[100, 520], [500, 520], [500, 800], [100, 800]]
+      },
+      {
+        "zone_id": "LIPSTICK",
+        "sku_zone": "LIPSTICK",
+        "polygon": [[520, 520], [900, 520], [900, 800], [520, 800]]
+      },
+      {
+        "zone_id": "FOUNDATION",
+        "sku_zone": "FOUNDATION",
+        "polygon": [[920, 150], [1400, 150], [1400, 500], [920, 500]]
+      },
+      {
+        "zone_id": "BILLING",
+        "sku_zone": "BILLING",
+        "polygon": [[1420, 500], [1920, 500], [1920, 1080], [1420, 1080]]
+      }
+    ]
+  },
+  "STORE_MUM_001": {
+    "store_id": "STORE_MUM_001",
+    "name": "Apex Retail Mumbai",
+    "city": "Mumbai",
+    "open_hours": {"open": "10:00", "close": "22:00"},
+    "cameras": [
+      {"camera_id": "CAM_ENTRY_01", "type": "entry_exit", "entry_line": [[0, 50], [1920, 50]], "coverage_zones": []},
+      {"camera_id": "CAM_FLOOR_01", "type": "main_floor", "coverage_zones": ["SKINCARE", "HAIRCARE", "MAKEUP"]},
+      {"camera_id": "CAM_BILLING_01", "type": "billing", "coverage_zones": ["BILLING"]}
+    ],
+    "zones": [
+      {"zone_id": "SKINCARE", "sku_zone": "MOISTURISER", "polygon": [[100, 150], [500, 150], [500, 500], [100, 500]]},
+      {"zone_id": "HAIRCARE", "sku_zone": "SHAMPOO", "polygon": [[520, 150], [900, 150], [900, 500], [520, 500]]},
+      {"zone_id": "MAKEUP", "sku_zone": "LIPSTICK", "polygon": [[100, 520], [900, 520], [900, 800], [100, 800]]},
+      {"zone_id": "BILLING", "sku_zone": "BILLING", "polygon": [[1420, 500], [1920, 500], [1920, 1080], [1420, 1080]]}
+    ]
+  }
+}

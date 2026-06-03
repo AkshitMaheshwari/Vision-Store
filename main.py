@@ -121,3 +121,20 @@ def get_health():
                 "error": str(e)
             }
         )
+
+# Endpoint: Web UI Dashboard
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
+def get_dashboard_ui():
+    paths_to_check = [
+        os.path.join(os.path.dirname(__file__), "app", "dashboard.html"),
+        os.path.join(os.path.dirname(__file__), "dashboard.html"),
+        "app/dashboard.html",
+        "dashboard.html"
+    ]
+    for p in paths_to_check:
+        if os.path.exists(p):
+            with open(p, "r", encoding="utf-8") as f:
+                return f.read()
+    return "<h3>Dashboard HTML template file not found</h3>"

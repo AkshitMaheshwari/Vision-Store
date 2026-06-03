@@ -20,3 +20,7 @@ venv/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Large video files
+data/clips/
+*.mp4

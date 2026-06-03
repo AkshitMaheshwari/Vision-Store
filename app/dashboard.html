@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Retail - Store Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(26, 26, 36, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #c5c6c7;
+            --accent-purple: #8a2be2;
+            --accent-cyan: #66fcf1;
+            --accent-green: #00ff87;
+            --accent-red: #ff3366;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(102, 252, 241, 0.08) 0%, transparent 40%);
+        }
+
+        header {
+            padding: 20px 40px;
+            background: rgba(11, 12, 16, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .store-selector {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .store-selector:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.2);
+        }
+
+        main {
+            flex: 1;
+            padding: 30px 40px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        /* Stats Cards */
+        .card-stat {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-stat::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+        }
+
+        .card-stat:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 252, 241, 0.3);
+        }
+
+        .card-stat .title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .card-stat .value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-stat .value.accent-cyan { color: var(--accent-cyan); }
+        .card-stat .value.accent-green { color: var(--accent-green); }
+        .card-stat .value.accent-purple { color: var(--accent-purple); }
+
+        .card-stat .subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Large Sections */
+        .card-large {
+            grid-column: span 2;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-large h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Funnel Layout */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+        }
+
+        .funnel-stage {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .funnel-label {
+            width: 120px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .funnel-bar-wrapper {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .funnel-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+            border-radius: 12px;
+            transition: width 1s ease-in-out;
+            width: 0%;
+        }
+
+        .funnel-value {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .funnel-dropoff {
+            width: 90px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-red);
+            padding-left: 10px;
+        }
+
+        .funnel-dropoff.no-drop {
+            color: var(--accent-green);
+        }
+
+        /* Heatmap Grid */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            flex: 1;
+        }
+
+        .heatmap-cell {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .heatmap-cell:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .heatmap-cell .zone-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .heatmap-cell .metrics {
+            margin-top: 10px;
+        }
+
+        .heatmap-cell .metric-line {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .heatmap-cell .metric-line span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .heatmap-cell .heat-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        /* Anomalies Card */
+        .card-full {
+            grid-column: span 4;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+        }
+
+        .card-full h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--accent-cyan);
+        }
+
+        .anomalies-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .anomaly-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid var(--accent-purple);
+            border-radius: 4px 8px 8px 4px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .anomaly-item.CRITICAL { border-left-color: var(--accent-red); }
+        .anomaly-item.WARN { border-left-color: orange; }
+        .anomaly-item.INFO { border-left-color: var(--accent-cyan); }
+
+        .anomaly-details h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .anomaly-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .CRITICAL .anomaly-badge { background: rgba(255, 51, 102, 0.2); color: var(--accent-red); }
+        .WARN .anomaly-badge { background: rgba(255, 165, 0, 0.2); color: orange; }
+        .INFO .anomaly-badge { background: rgba(102, 252, 241, 0.2); color: var(--accent-cyan); }
+
+        .anomaly-details p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .anomaly-action {
+            text-align: right;
+            max-width: 300px;
+        }
+
+        .anomaly-action span {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .anomaly-action p {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-top: 4px;
+        }
+
+        .no-anomalies {
+            text-align: center;
+            color: var(--accent-green);
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        /* Scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Apex Retail — Store Intelligence</h1>
+        <select class="store-selector" id="storeSelector" onchange="changeStore()">
+            <option value="STORE_BLR_002">Bengaluru Store (STORE_BLR_002)</option>
+            <option value="STORE_MUM_001">Mumbai Store (STORE_MUM_001)</option>
+        </select>
+    </header>
+
+    <main>
+        <!-- Row 1: Stats Cards -->
+        <div class="card-stat">
+            <div class="title">Unique Visitors</div>
+            <div class="value accent-cyan" id="uniqueVisitors">0</div>
+            <div class="subtitle" id="statsDate">Loading...</div>
+        </div>
+        <div class="card-stat">
+            <div class="title">Conversion Rate</div>
+            <div class="value accent-green" id="conversionRate">0.0%</div>
+            <div class="subtitle">Completed purchases</div>
+        </div>
+        <div class="card-stat">
+            <div class="title">Queue Depth</div>
+            <div class="value accent-purple" id="queueDepth">0</div>
+            <div class="subtitle">Customers at Cash Counter</div>
+        </div>
+        <div class="card-stat">
+            <div class="title">Abandonment Rate</div>
+            <div class="value" id="abandonmentRate" style="color: var(--accent-red);">0.0%</div>
+            <div class="subtitle">Left queue without buying</div>
+        </div>
+
+        <!-- Row 2: Funnel & Heatmap -->
+        <div class="card-large">
+            <h2>Customer Conversion Funnel <span>Unique visitors</span></h2>
+            <div class="funnel-container" id="funnelContainer">
+                <!-- Injected by JavaScript -->
+            </div>
+        </div>
+
+        <div class="card-large">
+            <h2>Store Heatmap Density <span id="confidenceBadge">Confidence: Low</span></h2>
+            <div class="heatmap-grid" id="heatmapGrid">
+                <!-- Injected by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Row 3: Anomalies -->
+        <div class="card-full">
+            <h2>Active Operational Alerts</h2>
+            <div class="anomalies-list" id="anomaliesList">
+                <div class="no-anomalies">✓ All systems nominal. No operational anomalies detected.</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentStoreId = "STORE_BLR_002";
+
+        function changeStore() {
+            currentStoreId = document.getElementById("storeSelector").value;
+            updateDashboard();
+        }
+
+        async function fetchJSON(url) {
+            try {
+                const res = await fetch(url);
+                if (res.ok) return await res.json();
+            } catch (e) {
+                console.error("Error fetching " + url, e);
+            }
+            return null;
+        }
+
+        async function updateDashboard() {
+            const baseUrl = `/stores/${currentStoreId}`;
+            
+            // 1. Fetch Metrics
+            const metrics = await fetchJSON(`${baseUrl}/metrics`);
+            if (metrics) {
+                document.getElementById("uniqueVisitors").textContent = metrics.unique_visitors;
+                document.getElementById("conversionRate").textContent = (metrics.conversion_rate * 100).toFixed(1) + "%";
+                document.getElementById("queueDepth").textContent = metrics.current_queue_depth;
+                document.getElementById("abandonmentRate").textContent = (metrics.abandonment_rate * 100).toFixed(1) + "%";
+                document.getElementById("statsDate").textContent = "Tracking Date: " + metrics.date;
+            }
+
+            // 2. Fetch Funnel
+            const funnel = await fetchJSON(`${baseUrl}/funnel`);
+            if (funnel) {
+                const container = document.getElementById("funnelContainer");
+                container.innerHTML = "";
+                
+                const maxCount = funnel.stages[0]?.count || 1;
+                
+                funnel.stages.forEach((stage, idx) => {
+                    const pct = maxCount > 0 ? (stage.count / maxCount * 100) : 0;
+                    const dropText = idx === 0 ? "Entry" : `-${stage.drop_off_pct}%`;
+                    const dropClass = idx === 0 ? "no-drop" : "";
+                    
+                    const el = document.createElement("div");
+                    el.className = "funnel-stage";
+                    el.innerHTML = `
+                        <div class="funnel-label">${stage.stage_name}</div>
+                        <div class="funnel-bar-wrapper">
+                            <div class="funnel-bar" style="width: ${pct}%"></div>
+                            <div class="funnel-value">${stage.count} shoppers</div>
+                        </div>
+                        <div class="funnel-dropoff ${dropClass}">${dropText}</div>
+                    `;
+                    container.appendChild(el);
+                });
+            }
+
+            // 3. Fetch Heatmap
+            const heatmap = await fetchJSON(`${baseUrl}/heatmap`);
+            if (heatmap) {
+                const grid = document.getElementById("heatmapGrid");
+                grid.innerHTML = "";
+                
+                // Set confidence badge
+                const confBadge = document.getElementById("confidenceBadge");
+                confBadge.textContent = heatmap.data_confidence ? "Confidence: High" : "Confidence: Low (mock/sparse)";
+                confBadge.style.color = heatmap.data_confidence ? "var(--accent-green)" : "orange";
+
+                heatmap.heatmap.forEach(item => {
+                    // Map score 0-100 to HSL color (red is 0, green is 120)
+                    const hue = (item.normalized_score / 100) * 120;
+                    const cellColor = `hsl(${hue}, 80%, 45%)`;
+                    
+                    const cell = document.createElement("div");
+                    cell.className = "heatmap-cell";
+                    cell.innerHTML = `
+                        <div>
+                            <span class="zone-name">${item.zone_id}</span>
+                            <div class="heat-indicator" style="color: ${cellColor}"></div>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric-line">Visits: <span>${item.visit_count}</span></div>
+                            <div class="metric-line">Dwell: <span>${item.avg_dwell_seconds}s</span></div>
+                            <div class="metric-line">Score: <span>${item.normalized_score}</span></div>
+                        </div>
+                    `;
+                    grid.appendChild(cell);
+                });
+            }
+
+            // 4. Fetch Anomalies
+            const anomalies = await fetchJSON(`${baseUrl}/anomalies`);
+            if (anomalies) {
+                const list = document.getElementById("anomaliesList");
+                list.innerHTML = "";
+                
+                if (anomalies.anomalies.length === 0) {
+                    list.innerHTML = '<div class="no-anomalies">✓ All systems nominal. No operational anomalies detected.</div>';
+                } else {
+                    anomalies.anomalies.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = `anomaly-item ${item.severity}`;
+                        div.innerHTML = `
+                            <div class="anomaly-details">
+                                <h3><span class="anomaly-badge">${item.severity}</span> ${item.type}</h3>
+                                <p>${item.description}</p>
+                            </div>
+                            <div class="anomaly-action">
+                                <span>Suggested Action</span>
+                                <p>${item.suggested_action}</p>
+                            </div>
+                        `;
+                        list.appendChild(div);
+                    });
+                }
+            }
+        }
+
+        // Initial load and poll every 1.5 seconds
+        updateDashboard();
+        setInterval(updateDashboard, 1500);
+    </script>
+</body>
+</html>
