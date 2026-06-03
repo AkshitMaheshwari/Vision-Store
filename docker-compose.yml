@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ../Brigade_Bangalore_10_April_26 (1)bc6219c.csv:/app/Brigade_Bangalore_10_April_26 (1)bc6219c.csv
+    environment:
+      - PYTHONUNBUFFERED=1
