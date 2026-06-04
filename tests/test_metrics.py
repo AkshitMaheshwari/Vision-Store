@@ -7,7 +7,7 @@ import os
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 import app.ingestion
-import app.main
+import main
 
 # Mock database path for testing isolation
 TEST_DB_PATH = "test_store_intelligence.db"
@@ -29,7 +29,7 @@ def setup_test_db(monkeypatch):
         except PermissionError:
             pass
 
-client = TestClient(app.main.app)
+client = TestClient(main.app)
 
 def test_event_ingestion_and_idempotency():
     # Test valid event ingestion

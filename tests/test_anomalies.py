@@ -5,7 +5,7 @@ import pytest
 import os
 from fastapi.testclient import TestClient
 import app.ingestion
-import app.main
+import main
 
 TEST_DB_PATH = "test_anomalies_intelligence.db"
 
@@ -23,7 +23,7 @@ def setup_test_db(monkeypatch):
         except PermissionError:
             pass
 
-client = TestClient(app.main.app)
+client = TestClient(main.app)
 
 def test_billing_queue_spike_anomaly():
     # Send a sequence of BILLING_QUEUE_JOIN events where queue depth is 6,
