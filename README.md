@@ -1,6 +1,6 @@
 # Store Intelligence System - Quickstart Guide
 
-This project is a containerized real-time Store Intelligence API and Computer Vision pipeline designed to analyze customer behavior and purchase conversions in physical retail stores.
+This project is a containerized real-time Store Intelligence API along with `YOLO v8 nano` model and Computer Vision pipeline designed to analyze customer behavior and purchase conversions in physical retail stores.
 
 ---
 
