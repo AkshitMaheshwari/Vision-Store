@@ -179,3 +179,30 @@ def test_conversion_funnel():
     assert stages["Billing Queue"]["drop_off_pct"] == 33.33
     # Drop-off from Billing Queue (2) to Purchase (1) is (2 - 1)/2 = 50.00%
     assert stages["Purchase"]["drop_off_pct"] == 50.0
+
+def test_store_id_mapping_and_conversion():
+    import tempfile
+    conn = app.ingestion.get_db_connection()
+    
+    # Write a temporary mock POS transaction CSV
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, newline='', encoding='utf-8') as f:
+        f.write("order_id,store_id,order_date,order_time,total_amount\n")
+        f.write("TX_MAP_CSV_001,ST1008,03-06-2026,14:04:30,500.00\n")
+        temp_csv_path = f.name
+        
+    try:
+        app.ingestion.import_pos_transactions_csv(temp_csv_path)
+        
+        # Verify that the store_id was correctly mapped to STORE_BLR_002
+        cursor = conn.cursor()
+        cursor.execute("SELECT store_id FROM pos_transactions WHERE transaction_id = 'TX_MAP_CSV_001'")
+        row = cursor.fetchone()
+        assert row is not None
+        assert row["store_id"] == "STORE_BLR_002"
+    finally:
+        conn.close()
+        if os.path.exists(temp_csv_path):
+            try:
+                os.remove(temp_csv_path)
+            except OSError:
+                pass

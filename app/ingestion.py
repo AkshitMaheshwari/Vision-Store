@@ -83,6 +83,8 @@ def import_pos_transactions_csv(csv_path: str):
                     continue
                 
                 store_id = row.get("store_id") or "ST1008" # Fallback if missing
+                if store_id == "ST1008":
+                    store_id = "STORE_BLR_002"
                 
                 # Combine order_date (DD-MM-YYYY) and order_time (HH:MM:SS)
                 date_str = row.get("order_date")
