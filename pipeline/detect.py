@@ -25,7 +25,7 @@ except ImportError:
 
 def is_wearing_uniform(frame: np.ndarray, bbox: Tuple[float, float, float, float]) -> bool:
     """
-    Checks if a detected person is wearing the reddish-pink/magenta store staff uniform
+    Checks if a detected person is wearing a mostly black store staff uniform
     using HSV color thresholding on their upper torso.
     """
     x1, y1, x2, y2 = map(int, bbox)
@@ -51,20 +51,15 @@ def is_wearing_uniform(frame: np.ndarray, bbox: Tuple[float, float, float, float
     crop = frame[torso_y1:torso_y2, torso_x1:torso_x2]
     hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
     
-    # Reddish-pink/magenta color range in HSV space (dual range to handle wrap-around red/magenta)
-    lower_red1 = np.array([0, 60, 60])
-    upper_red1 = np.array([10, 255, 255])
-    lower_red2 = np.array([140, 60, 60])
-    upper_red2 = np.array([180, 255, 255])
-    
-    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
-    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
-    mask = cv2.bitwise_or(mask1, mask2)
-    
-    magenta_ratio = float(np.sum(mask > 0)) / mask.size
-    
-    # Return True if >40% of the torso region matches the reddish-pink uniform color
-    return bool(magenta_ratio > 0.40)
+    # Black clothing has very low brightness and low saturation in HSV space.
+    lower_black = np.array([0, 0, 0])
+    upper_black = np.array([180, 80, 70])
+    mask = cv2.inRange(hsv, lower_black, upper_black)
+
+    black_ratio = float(np.sum(mask > 0)) / mask.size
+
+    # Return True if most of the torso region looks black.
+    return bool(black_ratio > 0.55)
 
 def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_url: str, show: bool = False, output_path: str = None, model_name: str = "yolov8n.pt"):
     """
@@ -212,7 +207,7 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
                     visitor_id = f"VIS_{uuid.uuid4().hex[:6]}"
                     reid_mgr.register_new_visitor(visitor_id, emb)
                     
-                    # Real-time purple uniform check for staff classification
+                    # Real-time black uniform check for staff classification
                     # If local track is 202 (mock staff), force it true for validation
                     is_staff = is_wearing_uniform(frame, bbox) or (local_track_id == 202)
                     visitor_staff_status[visitor_id] = is_staff

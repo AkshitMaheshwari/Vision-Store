@@ -1,0 +1,225 @@
+﻿{
+    "events":  [
+                   {
+                       "event_id":  "47403f24-aa4c-4ff0-bfd4-1598ab37c470",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM1",
+                       "visitor_id":  "ID_60001",
+                       "event_type":  "ENTRY",
+                       "timestamp":  "2026-03-08T18:10:05.120000Z",
+                       "zone_id":  null,
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.95,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  null,
+                                        "session_seq":  1
+                                    }
+                   },
+                   {
+                       "event_id":  "1cab23ec-aa1b-42a7-adf7-45d8579a9edd",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM1",
+                       "visitor_id":  "ID_60002",
+                       "event_type":  "ENTRY",
+                       "timestamp":  "2026-03-08T18:10:22.480000Z",
+                       "zone_id":  null,
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.95,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  null,
+                                        "session_seq":  1
+                                    }
+                   },
+                   {
+                       "event_id":  "0614d7c4-e556-4b15-a1f5-c4a22aa18575",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM1",
+                       "visitor_id":  "ID_60003",
+                       "event_type":  "ENTRY",
+                       "timestamp":  "2026-03-08T18:10:24.920000Z",
+                       "zone_id":  null,
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.95,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  null,
+                                        "session_seq":  1
+                                    }
+                   },
+                   {
+                       "event_id":  "57e59132-b079-4550-a6f0-1cf854e63485",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM2",
+                       "visitor_id":  "VIS_101",
+                       "event_type":  "ZONE_ENTER",
+                       "timestamp":  "2026-03-08T18:10:45.280000Z",
+                       "zone_id":  "LEFT_SHELF",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "LEFT_SHELF",
+                                        "session_seq":  1
+                                    }
+                   },
+                   {
+                       "event_id":  "1b1e8e4c-3961-4c51-880d-60df6b9f90b5",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM3",
+                       "visitor_id":  "VIS_102",
+                       "event_type":  "ZONE_ENTER",
+                       "timestamp":  "2026-03-08T18:11:02.160000Z",
+                       "zone_id":  "CENTER_DISPLAY",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "CENTER_DISPLAY",
+                                        "session_seq":  1
+                                    }
+                   },
+                   {
+                       "event_id":  "45a50578-285c-406a-a041-b3c0050e6537",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM2",
+                       "visitor_id":  "VIS_101",
+                       "event_type":  "ZONE_EXIT",
+                       "timestamp":  "2026-03-08T18:11:18.720000Z",
+                       "zone_id":  "LEFT_SHELF",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "LEFT_SHELF",
+                                        "session_seq":  2
+                                    }
+                   },
+                   {
+                       "event_id":  "f47d2d4d-6e75-407d-b555-045173a9e91a",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM3",
+                       "visitor_id":  "VIS_102",
+                       "event_type":  "ZONE_EXIT",
+                       "timestamp":  "2026-03-08T18:11:44.920000Z",
+                       "zone_id":  "CENTER_DISPLAY",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "CENTER_DISPLAY",
+                                        "session_seq":  2
+                                    }
+                   },
+                   {
+                       "event_id":  "a6549ee8-f74f-4a06-a08a-a7d36b78c3d4",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM4",
+                       "visitor_id":  "VIS_103",
+                       "event_type":  "ZONE_ENTER",
+                       "timestamp":  "2026-03-08T18:12:05.520000Z",
+                       "zone_id":  "LIPSTICK_AISLE",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "LIPSTICK_AISLE",
+                                        "session_seq":  1
+                                    }
+                   },
+                   {
+                       "event_id":  "cb97dabc-89f4-4ecf-a465-36c9728c43f2",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM1",
+                       "visitor_id":  "ID_60001",
+                       "event_type":  "EXIT",
+                       "timestamp":  "2026-03-08T18:12:44.360000Z",
+                       "zone_id":  null,
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.95,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  null,
+                                        "session_seq":  2
+                                    }
+                   },
+                   {
+                       "event_id":  "ccd85d5e-84eb-4ea7-b5fc-54617e19c8f3",
+                       "store_id":  "ST1076",
+                       "camera_id":  "CAM4",
+                       "visitor_id":  "VIS_103",
+                       "event_type":  "ZONE_EXIT",
+                       "timestamp":  "2026-03-08T18:12:52.880000Z",
+                       "zone_id":  "LIPSTICK_AISLE",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "LIPSTICK_AISLE",
+                                        "session_seq":  2
+                                    }
+                   },
+                   {
+                       "event_id":  "8ce6f51f-1f53-4d95-9423-c250f2522bd0",
+                       "store_id":  "ST1076",
+                       "camera_id":  "PURPLLE_MUM_1076_CAM6",
+                       "visitor_id":  "VIS_102",
+                       "event_type":  "BILLING_QUEUE_JOIN",
+                       "timestamp":  "2026-03-08T18:13:05.080000Z",
+                       "zone_id":  "CASH_COUNTER",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  2,
+                                        "sku_zone":  "BILLING",
+                                        "session_seq":  3
+                                    }
+                   },
+                   {
+                       "event_id":  "b2db8987-a135-4be4-a809-1b7f71e3972f",
+                       "store_id":  "ST1076",
+                       "camera_id":  "PURPLLE_MUM_1076_CAM6",
+                       "visitor_id":  "VIS_103",
+                       "event_type":  "BILLING_QUEUE_JOIN",
+                       "timestamp":  "2026-03-08T18:13:42.360000Z",
+                       "zone_id":  "CASH_COUNTER",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  3,
+                                        "sku_zone":  "BILLING",
+                                        "session_seq":  3
+                                    }
+                   },
+                   {
+                       "event_id":  "702c08d6-5969-42a8-9077-d91f115cc39f",
+                       "store_id":  "ST1076",
+                       "camera_id":  "PURPLLE_MUM_1076_CAM6",
+                       "visitor_id":  "VIS_101",
+                       "event_type":  "BILLING_QUEUE_ABANDON",
+                       "timestamp":  "2026-03-08T18:14:02.880000Z",
+                       "zone_id":  "CASH_COUNTER",
+                       "dwell_ms":  0,
+                       "is_staff":  false,
+                       "confidence":  0.9,
+                       "metadata":  {
+                                        "queue_depth":  null,
+                                        "sku_zone":  "BILLING",
+                                        "session_seq":  3
+                                    }
+                   }
+               ]
+}
