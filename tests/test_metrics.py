@@ -206,3 +206,40 @@ def test_store_id_mapping_and_conversion():
                 os.remove(temp_csv_path)
             except OSError:
                 pass
+
+def test_database_reset():
+    # Ingest a mock event
+    event = {
+        "event_id": "test-reset-evt-1",
+        "store_id": "STORE_TEST",
+        "camera_id": "CAM_ENTRY_01",
+        "visitor_id": "VIS_RESET_001",
+        "event_type": "ENTRY",
+        "timestamp": "2026-06-03T14:00:00Z",
+        "zone_id": None,
+        "dwell_ms": 0,
+        "is_staff": False,
+        "confidence": 0.95,
+        "metadata": {}
+    }
+    response = client.post("/events/ingest", json={"events": [event]})
+    assert response.status_code == 200
+    
+    # Verify event is in DB
+    conn = app.ingestion.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM events;")
+    assert cursor.fetchone()[0] > 0
+    conn.close()
+    
+    # Call reset database endpoint
+    response = client.post("/db/reset")
+    assert response.status_code == 200
+    assert response.json()["status"] == "success"
+    
+    # Verify event is gone from DB
+    conn = app.ingestion.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM events;")
+    assert cursor.fetchone()[0] == 0
+    conn.close()

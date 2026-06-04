@@ -6,8 +6,15 @@ import time
 import json
 import numpy as np
 from typing import Dict, Tuple, List
-from tracker import HomographyMapper, ReIDManager
-from emit import EventEmitter, API_INGEST_URL
+try:
+    from tracker import HomographyMapper, ReIDManager
+except ImportError:
+    from pipeline.tracker import HomographyMapper, ReIDManager
+
+try:
+    from emit import EventEmitter, API_INGEST_URL
+except ImportError:
+    from pipeline.emit import EventEmitter, API_INGEST_URL
 
 # Try importing ultralytics for YOLOv8
 try:
@@ -18,7 +25,7 @@ except ImportError:
 
 def is_wearing_uniform(frame: np.ndarray, bbox: Tuple[float, float, float, float]) -> bool:
     """
-    Checks if a detected person is wearing the purple store staff uniform
+    Checks if a detected person is wearing the reddish-pink/magenta store staff uniform
     using HSV color thresholding on their upper torso.
     """
     x1, y1, x2, y2 = map(int, bbox)
@@ -44,17 +51,22 @@ def is_wearing_uniform(frame: np.ndarray, bbox: Tuple[float, float, float, float
     crop = frame[torso_y1:torso_y2, torso_x1:torso_x2]
     hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
     
-    # Purple/violet color range in HSV space
-    lower_purple = np.array([120, 30, 30])
-    upper_purple = np.array([168, 255, 255])
+    # Reddish-pink/magenta color range in HSV space (dual range to handle wrap-around red/magenta)
+    lower_red1 = np.array([0, 60, 60])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([140, 60, 60])
+    upper_red2 = np.array([180, 255, 255])
     
-    mask = cv2.inRange(hsv, lower_purple, upper_purple)
-    purple_ratio = float(np.sum(mask > 0)) / mask.size
+    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    mask = cv2.bitwise_or(mask1, mask2)
     
-    # Return True if >12% of the torso region is purple
-    return bool(purple_ratio > 0.12)
+    magenta_ratio = float(np.sum(mask > 0)) / mask.size
+    
+    # Return True if >40% of the torso region matches the reddish-pink uniform color
+    return bool(magenta_ratio > 0.40)
 
-def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_url: str, show: bool = False, output_path: str = None):
+def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_url: str, show: bool = False, output_path: str = None, model_name: str = "yolov8n.pt"):
     """
     Main loop that reads a video clip, performs object detection and tracking,
     determines spatial zone containment dynamically using store_layout.json,
@@ -128,7 +140,7 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
     
     # Load YOLO model
     if YOLO_AVAILABLE:
-        model = YOLO("yolov8m.pt")
+        model = YOLO(model_name)
     else:
         print("Ultralytics library not found. Running in simulated playback mode...")
         model = None
@@ -136,6 +148,8 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
     frame_count = 0
     batch_events = []
     track_to_global: Dict[int, str] = {}
+    total_came_in = 0
+    total_went_out = 0
     
     while cap.isOpened():
         ret, frame = cap.read()
@@ -212,6 +226,8 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
                         confidence=conf
                     )
                     batch_events.append(evt)
+                    if not is_staff:
+                        total_came_in += 1
                     
                 track_to_global[local_track_id] = visitor_id
                 
@@ -367,7 +383,8 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
             
         # 4. Render Telemetry HUD (Glassmorphism stats box in top-left)
         overlay = frame.copy()
-        cv2.rectangle(overlay, (15, 15), (370, 250), (20, 20, 20), -1)
+        hud_height = 300 if camera_id.startswith("CAM_ENTRY") else 250
+        cv2.rectangle(overlay, (15, 15), (370, hud_height), (20, 20, 20), -1)
         cv2.addWeighted(overlay, 0.75, frame, 0.25, 0, frame)
         
         # HUD Title
@@ -385,8 +402,14 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
         cv2.putText(frame, f"Active Customers: {active_customers}", (30, 135), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (0, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(frame, f"Active Staff (Excluded): {active_staff}", (30, 160), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (180, 0, 180), 1, cv2.LINE_AA)
         cv2.putText(frame, f"Total Unique Visitors: {total_unique_visitors}", (30, 185), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (255, 255, 255), 1, cv2.LINE_AA)
-        cv2.putText(frame, f"Queue Depth (Customers): {q_depth}", (30, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (0, 255, 255) if q_depth > 0 else (255, 255, 255), 1, cv2.LINE_AA)
-        cv2.putText(frame, f"Frame: #{frame_count}", (30, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (180, 180, 180), 1, cv2.LINE_AA)
+        
+        if camera_id.startswith("CAM_ENTRY"):
+            cv2.putText(frame, f"Visitors In: {total_came_in}", (30, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (0, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame, f"Visitors Out: {total_went_out}", (30, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (0, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame, f"Frame: #{frame_count}", (30, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (180, 180, 180), 1, cv2.LINE_AA)
+        else:
+            cv2.putText(frame, f"Queue Depth (Customers): {q_depth}", (30, 210), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (0, 255, 255) if q_depth > 0 else (255, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame, f"Frame: #{frame_count}", (30, 235), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (180, 180, 180), 1, cv2.LINE_AA)
         
         # Write frame to video file
         if writer is not None:
@@ -396,7 +419,7 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
         if show:
             cv2.imshow("Store Intelligence Visual Feed", frame)
             # Break loop on keypress 'q'
-            if cv2.waitKey(int(frame_delay * 1000)) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
         # Emit batches periodically
@@ -432,6 +455,8 @@ def run_detection_pipeline(video_path: str, camera_id: str, store_id: str, api_u
                 event_type="EXIT"
             )
             batch_events.append(evt)
+            if not is_staff:
+                total_went_out += 1
 
         if not YOLO_AVAILABLE:
             # Stop simulated runner after 120 frames
@@ -457,6 +482,7 @@ if __name__ == "__main__":
     parser.add_argument("--api-url", default=API_INGEST_URL, help="FastAPI events ingestion endpoint")
     parser.add_argument("--show", action="store_true", help="Display the output video window in real time")
     parser.add_argument("--output", default=None, help="Path to save the annotated output video file")
+    parser.add_argument("--model", default="yolov8n.pt", help="YOLO model version (yolov8n.pt, yolov8m.pt, etc.)")
     
     args = parser.parse_args()
     run_detection_pipeline(
@@ -465,5 +491,6 @@ if __name__ == "__main__":
         store_id=args.store, 
         api_url=args.api_url, 
         show=args.show, 
-        output_path=args.output
+        output_path=args.output,
+        model_name=args.model
     )

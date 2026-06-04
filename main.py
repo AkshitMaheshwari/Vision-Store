@@ -8,7 +8,7 @@ from app.models import (
     StoreFunnelResponse, StoreHeatmapResponse, StoreAnomaliesResponse, 
     HealthResponse
 )
-from app.ingestion import init_db, ingest_event_batch
+from app.ingestion import init_db, ingest_event_batch, get_db_connection
 from app.metrics import get_store_metrics
 from app.funnel import get_store_funnel
 from app.heatmap import get_store_heatmap
@@ -54,6 +54,31 @@ def ingest_events(payload: IngestRequest):
         duplicates_skipped=duplicates,
         errors=errors if errors else None
     )
+
+# Endpoint: Reset Database values
+@app.post("/db/reset", status_code=status.HTTP_200_OK)
+def reset_db_endpoint():
+    try:
+        # Delete events and pos_transactions tables
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DROP TABLE IF EXISTS events;")
+        cursor.execute("DROP TABLE IF EXISTS pos_transactions;")
+        conn.commit()
+        conn.close()
+        
+        # Re-initialize DB and re-load transactions CSV
+        pos_csv = r"c:\AI_ML\Computer_Vision\Purple\Brigade_Bangalore_10_April_26 (1)bc6219c.csv"
+        if not os.path.exists(pos_csv):
+            pos_csv = "Brigade_Bangalore_10_April_26 (1)bc6219c.csv"
+            
+        init_db(pos_csv_path=pos_csv if os.path.exists(pos_csv) else None)
+        return {"status": "success", "message": "Database reset successfully."}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error resetting database: {e}"
+        )
 
 # Endpoint: Store metrics
 @app.get("/stores/{id}/metrics", response_model=StoreMetricsResponse)
