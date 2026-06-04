@@ -4,6 +4,14 @@ This project is a containerized real-time Store Intelligence API and Computer Vi
 
 ---
 
+## Application Screenshots
+
+![Store Intelligence App Screenshot 1](https://github.com/user-attachments/assets/81e4b14b-7c34-464a-8d23-1721e040b1c6)
+
+![Store Intelligence App Screenshot 2](https://github.com/user-attachments/assets/cbb9a06c-5e20-4348-8380-84a5dd00f412)
+
+---
+
 ## 1. Quickstart Setup (5 Commands)
 
 Run these five commands in your terminal to build, start, and verify the entire system:
